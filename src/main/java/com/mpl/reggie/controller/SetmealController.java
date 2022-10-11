@@ -15,6 +15,9 @@ import com.mpl.reggie.service.SetmealService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,6 +48,7 @@ public class SetmealController {
      * @return
      */
     @PostMapping
+    @CacheEvict(value = "setmealCache",allEntries = true)
     public R<String> save(@RequestBody SetmealDto setmealDto){
 //        log.info("套餐信息{}",setmealDto);
         setmealService.saveWithDish(setmealDto);
@@ -90,13 +94,26 @@ public class SetmealController {
         return R.success(dtoPage);
     }
 
+    /**
+     * 根据id删除套餐
+     * @param ids
+     * @return
+     */
     @DeleteMapping
+    @CacheEvict(value = "setmealCache",allEntries = true)
     public R<String> delete(@RequestParam List<Long> ids){
         setmealService.removeWithDish(ids);
         return R.success("套餐数据删除成功");
     }
 
+    /**
+     * 根据id更改状态
+     * @param status
+     * @param ids
+     * @return
+     */
     @PostMapping("/status/{status}")
+    @CacheEvict(value = "setmealCache",allEntries = true)
     public R<String> update(@PathVariable Integer status,@RequestParam List<Long> ids){
 //        log.info("状态：{}，id：{}",status,ids);
         setmealService.updateSetmelStatusById(status,ids);
@@ -108,6 +125,7 @@ public class SetmealController {
      * @param setmeal
      * @return
      */
+    @Cacheable(value = "setmealCache",key = "#setmeal.categoryId + '_' + #setmeal.status")
     @GetMapping("/list")
     public R<List<Setmeal>> list(Setmeal setmeal){
         LambdaQueryWrapper<Setmeal> queryWrapper = new LambdaQueryWrapper<>();
@@ -121,6 +139,11 @@ public class SetmealController {
         return R.success(list);
     }
 
+    /**
+     * 根据id查询图片
+     * @param id
+     * @return
+     */
     @GetMapping("/dish/{id}")
     public R<List<SetmealDto>> dish(@PathVariable Long id){
         LambdaQueryWrapper<SetmealDish> queryWrapper = new LambdaQueryWrapper<>();

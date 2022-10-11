@@ -108,6 +108,7 @@ public class DishController {
     public R<String> update(@RequestBody DishDto dishDto){
         dishService.updateWithFlavor(dishDto);
         Set keys = redisTemplate.keys("dish_*");
+//        Set keys = redisTemplate.keys("dish_*");
         redisTemplate.delete(keys);
         return R.success("新增菜品成功");
     }
