@@ -248,7 +248,7 @@
               // 起售停售---批量起售停售接口
               setmealStatusByStatus(params).then(res => {
                 if (res.code === 1) {
-                  this.$message.success(res.msg)
+                  this.$message.success(res.data)
                   this.handleQuery()
                 } else {
                   this.$message.error(res.msg || '操作失败')

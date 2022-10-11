@@ -100,7 +100,7 @@ public class SetmealController {
     public R<String> update(@PathVariable Integer status,@RequestParam List<Long> ids){
 //        log.info("状态：{}，id：{}",status,ids);
         setmealService.updateSetmelStatusById(status,ids);
-        return R.success("套餐状态已经更改成功！");
+        return R.success("套餐状态已经更改成功");
     }
 
     /**
